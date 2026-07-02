@@ -4,111 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CNR - Suivi Plants Mono-Couffo</title>
-  <script src="https://cdn.jsdelivr.net/npm/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tabulator-tables@6.3.0/dist/css/tabulator.min.css" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#f0f0f0; }
-    h1 { text-align:center; color:#0066cc; padding:15px; }
-    .tabs { display:flex; background:#333; overflow-x:auto; flex-wrap:wrap; }
-    .tab { padding:12px 18px; color:white; cursor:pointer; border-right:1px solid #555; }
-    .tab.active { background:#0066cc; font-weight:bold; }
-    .content { padding:20px; background:white; min-height:85vh; }
-    .table-container { margin-bottom:30px; }
+    body { font-family: Arial, sans-serif; padding: 15px; background: #f4f4f4; margin: 0; }
+    h1 { color: #0066cc; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background: #0066cc; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .total { font-weight: bold; color: green; }
   </style>
 </head>
 <body>
-  <h1>🌱 CNR - Suivi Production et Plantation des Plants (Mono & Couffo)</h1>
-  
-  <div class="tabs" id="tabs"></div>
-  <div class="content" id="content"></div>
+  <h1>🌱 CNR - Suivi Production et Plantation</h1>
+  <p style="text-align:center;">Template pour toutes les communes du Mono et Couffo</p>
+
+  <h2>Synthèse Mono-Couffo</h2>
+  <table>
+    <tr>
+      <th>Commune</th>
+      <th>Pépinières Écoles</th>
+      <th>Pépinières Privées</th>
+      <th>Production Totale</th>
+      <th>Plants Enlevés</th>
+    </tr>
+    <tr><td>Aplahoué</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td class="total">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td></tr>
+    <tr><td>Athiémé</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td class="total">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td></tr>
+    <tr><td>Lokossa</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td class="total">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td></tr>
+    <!-- Ajoute les autres communes ici de la même façon -->
+    <tr style="background:#d4edda; font-weight:bold;">
+      <td>TOTAL</td>
+      <td id="total-ecoles">0</td>
+      <td id="total-privees">0</td>
+      <td id="grand-total">0</td>
+      <td id="total-enleves">0</td>
+    </tr>
+  </table>
 
   <script>
-    const communes = ["Aplahoué", "Athiémé", "Lokossa", "Bopa", "Comé", "Grand-Popo", "Houéyogbé", 
-                     "Djakotomè", "Dogbo", "Klouékanmè", "Lalo", "Toviklin"];
-
-    function createTabs() {
-      const tabsDiv = document.getElementById('tabs');
-      tabsDiv.innerHTML = '';
-      
-      communes.forEach(comm => {
-        const tab = document.createElement('div');
-        tab.className = 'tab';
-        tab.textContent = comm;
-        tab.onclick = () => loadCommune(comm);
-        tabsDiv.appendChild(tab);
-      });
-
-      const synth = document.createElement('div');
-      synth.className = 'tab';
-      synth.textContent = "🔢 Synthèse Mono-Couffo";
-      synth.onclick = loadSynthesis;
-      tabsDiv.appendChild(synth);
-    }
-
-    function loadCommune(comm) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('content').innerHTML = `
-        <h2>${comm}</h2>
-        <div class="table-container">
-          <h3>POINT PRODUCTION PLANTS</h3>
-          <div id="prod-table"></div>
-        </div>
-        <div class="table-container">
-          <h3>POINT ENLEVEMENT PLANTS</h3>
-          <div id="enlev-table"></div>
-        </div>
-        <div class="table-container">
-          <h3>POINT MISE EN TERRE</h3>
-          <div id="mise-table"></div>
-        </div>
-      `;
-
-      // Exemple de tableau Production (tu peux compléter les colonnes)
-      new Tabulator("#prod-table", {
-        height: "400px",
-        data: [], 
-        layout: "fitColumns",
-        columns: [
-          {title: "Nom Pépiniériste", field: "nom", editor: "input"},
-          {title: "Production Totale", field: "totale", editor: "number", bottomCalc: "sum"},
-          {title: "Tectona", field: "tectona", editor: "number", bottomCalc: "sum"},
-          {title: "Gmelina", field: "gmelina", editor: "number", bottomCalc: "sum"},
-        ]
-      });
-    }
-
-    function loadSynthesis() {
-      document.getElementById('content').innerHTML = `
-        <h2>Synthèse Globale Mono-Couffo</h2>
-        <p>Totaux mis à jour automatiquement (version interactive)</p>
-        <table border="1" cellpadding="8" style="width:100%; border-collapse:collapse; text-align:center;">
-          <tr style="background:#0066cc; color:white;">
-            <th>Commune</th>
-            <th>Pépinières Écoles</th>
-            <th>Pépinières Privées</th>
-            <th>Production Totale</th>
-            <th>Plants Enlevés</th>
-          </tr>
-          ${communes.map(c => `
-            <tr>
-              <td><strong>${c}</strong></td>
-              <td contenteditable="true" onkeyup="updateTotal()">0</td>
-              <td contenteditable="true" onkeyup="updateTotal()">0</td>
-              <td class="total">0</td>
-              <td contenteditable="true" onkeyup="updateTotal()">0</td>
-            </tr>`).join('')}
-          <tr style="background:#d4edda; font-weight:bold;">
-            <td>TOTAL MONO-COUFFO</td>
-            <td id="total-ecoles">0</td>
-            <td id="total-privees">0</td>
-            <td id="grand-total">0</td>
-            <td id="total-enleves">0</td>
-          </tr>
-        </table>
-      `;
-    }
-
-    window.updateTotal = function() {
+    function calcTotal() {
       let ecoles = 0, privees = 0, enleves = 0;
       document.querySelectorAll('td[contenteditable]').forEach(td => {
         const val = parseFloat(td.textContent) || 0;
@@ -120,11 +53,7 @@
       document.getElementById('total-privees').textContent = privees;
       document.getElementById('grand-total').textContent = ecoles + privees;
       document.getElementById('total-enleves').textContent = enleves;
-    };
-
-    // Lancement
-    createTabs();
-    loadSynthesis();
+    }
   </script>
 </body>
 </html>
