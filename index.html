@@ -3,29 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNR - Suivi Plants Mono-Couffo</title>
+  <title>CNR - Suivi Plants</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 15px; background: #f4f4f4; }
     h1 { color: #0066cc; text-align: center; }
-    table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
     th { background: #0066cc; color: white; }
-    tr:nth-child(even) { background: #f9f9f9; }
-    .total { font-weight: bold; color: green; }
-    input { padding: 10px; width: 100%; margin: 10px 0; font-size: 16px; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; }
+    .admin { text-align: center; margin: 15px 0; }
   </style>
 </head>
 <body>
-  <h1>🌱 CNR - Suivi Production et Plantation des Plants</h1>
-  <p style="text-align:center;">(Mono & Couffo)</p>
+  <h1>🌱 CNR - Suivi Production et Plantation</h1>
 
-  <div>
-    <input type="password" id="pass" placeholder="Mot de passe admin pour modifier" onkeyup="if(event.key==='Enter') checkPass()">
-    <button onclick="checkPass()">Activer Mode Modification</button>
+  <div class="admin">
+    <input type="password" id="adminPass" placeholder="Mot de passe Admin" style="width:200px;">
+    <button onclick="activateAdmin()">Activer Édition</button>
   </div>
 
   <h2>Synthèse Globale Mono-Couffo</h2>
-  <table id="mainTable">
+  <table id="dataTable">
     <tr>
       <th>Commune</th>
       <th>Pépinières Écoles</th>
@@ -36,43 +34,49 @@
   </table>
 
   <script>
-    const adminPassword = "Corneille@12";
+    const ADMIN_PASSWORD = "Corneille@12";
+    let isAdmin = false;
+    let data = JSON.parse(localStorage.getItem('cnrPlantData')) || {};
 
-    function checkPass() {
-      if (document.getElementById('pass').value === adminPassword) {
-        alert("✅ Mode Administrateur activé ! Tu peux maintenant modifier les cellules.");
-        enableEditing();
+    const communes = ["Aplahoué","Athiémé","Lokossa","Bopa","Comé","Grand-Popo","Houéyogbé","Djakotomè","Dogbo","Klouékanmè","Lalo","Toviklin"];
+
+    const table = document.getElementById('dataTable');
+
+    // Create table rows
+    communes.forEach(comm => {
+      const row = table.insertRow();
+      row.innerHTML = `
+        <td>${comm}</td>
+        <td><input type="number" value="${data[comm]?.ecoles || 0}" onchange="saveData()"></td>
+        <td><input type="number" value="${data[comm]?.privees || 0}" onchange="saveData()"></td>
+        <td class="total">${(data[comm]?.ecoles || 0) + (data[comm]?.privees || 0)}</td>
+        <td><input type="number" value="${data[comm]?.enleves || 0}" onchange="saveData()"></td>
+      `;
+    });
+
+    function activateAdmin() {
+      if (document.getElementById('adminPass').value === ADMIN_PASSWORD) {
+        isAdmin = true;
+        alert("✅ Mode Administrateur activé. Les utilisateurs peuvent maintenant modifier.");
       } else {
         alert("❌ Mot de passe incorrect");
       }
     }
 
-    function enableEditing() {
-      const cells = document.querySelectorAll('#mainTable td');
-      cells.forEach(cell => {
-        cell.contentEditable = true;
-        cell.onkeyup = updateTotals;
-      });
+    function saveData() {
+      if (!isAdmin) return;
+      data = {};
+      const rows = table.rows;
+      for (let i = 1; i < rows.length; i++) {
+        const comm = rows[i].cells[0].textContent;
+        data[comm] = {
+          ecoles: parseFloat(rows[i].cells[1].querySelector('input').value) || 0,
+          privees: parseFloat(rows[i].cells[2].querySelector('input').value) || 0,
+          enleves: parseFloat(rows[i].cells[4].querySelector('input').value) || 0
+        };
+      }
+      localStorage.setItem('cnrPlantData', JSON.stringify(data));
     }
-
-    function updateTotals() {
-      // Simple total update logic
-      console.log("Totaux mis à jour");
-    }
-
-    // Add sample rows
-    const communes = ["Aplahoué","Athiémé","Lokossa","Bopa","Comé","Grand-Popo","Houéyogbé","Djakotomè","Dogbo","Klouékanmè","Lalo","Toviklin"];
-    const table = document.getElementById('mainTable');
-    communes.forEach(comm => {
-      const row = table.insertRow();
-      row.innerHTML = `
-        <td>${comm}</td>
-        <td contenteditable="false">0</td>
-        <td contenteditable="false">0</td>
-        <td class="total">0</td>
-        <td contenteditable="false">0</td>
-      `;
-    });
   </script>
 </body>
 </html>
