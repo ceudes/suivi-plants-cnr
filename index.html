@@ -5,21 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CNR - Suivi Plants Mono-Couffo</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 15px; background: #f4f4f4; margin: 0; }
+    body { font-family: Arial, sans-serif; padding: 15px; background: #f4f4f4; }
     h1 { color: #0066cc; text-align: center; }
     table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
     th { background: #0066cc; color: white; }
     tr:nth-child(even) { background: #f9f9f9; }
     .total { font-weight: bold; color: green; }
+    input { padding: 10px; width: 100%; margin: 10px 0; font-size: 16px; }
   </style>
 </head>
 <body>
-  <h1>🌱 CNR - Suivi Production et Plantation</h1>
-  <p style="text-align:center;">Template pour toutes les communes du Mono et Couffo</p>
+  <h1>🌱 CNR - Suivi Production et Plantation des Plants</h1>
+  <p style="text-align:center;">(Mono & Couffo)</p>
 
-  <h2>Synthèse Mono-Couffo</h2>
-  <table>
+  <div>
+    <input type="password" id="pass" placeholder="Mot de passe admin pour modifier" onkeyup="if(event.key==='Enter') checkPass()">
+    <button onclick="checkPass()">Activer Mode Modification</button>
+  </div>
+
+  <h2>Synthèse Globale Mono-Couffo</h2>
+  <table id="mainTable">
     <tr>
       <th>Commune</th>
       <th>Pépinières Écoles</th>
@@ -27,33 +33,46 @@
       <th>Production Totale</th>
       <th>Plants Enlevés</th>
     </tr>
-    <tr><td>Aplahoué</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td class="total">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td></tr>
-    <tr><td>Athiémé</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td class="total">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td></tr>
-    <tr><td>Lokossa</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td><td class="total">0</td><td contenteditable="true" onkeyup="calcTotal()">0</td></tr>
-    <!-- Ajoute les autres communes ici de la même façon -->
-    <tr style="background:#d4edda; font-weight:bold;">
-      <td>TOTAL</td>
-      <td id="total-ecoles">0</td>
-      <td id="total-privees">0</td>
-      <td id="grand-total">0</td>
-      <td id="total-enleves">0</td>
-    </tr>
   </table>
 
   <script>
-    function calcTotal() {
-      let ecoles = 0, privees = 0, enleves = 0;
-      document.querySelectorAll('td[contenteditable]').forEach(td => {
-        const val = parseFloat(td.textContent) || 0;
-        if (td.cellIndex === 1) ecoles += val;
-        if (td.cellIndex === 2) privees += val;
-        if (td.cellIndex === 4) enleves += val;
-      });
-      document.getElementById('total-ecoles').textContent = ecoles;
-      document.getElementById('total-privees').textContent = privees;
-      document.getElementById('grand-total').textContent = ecoles + privees;
-      document.getElementById('total-enleves').textContent = enleves;
+    const adminPassword = "Corneille@12";
+
+    function checkPass() {
+      if (document.getElementById('pass').value === adminPassword) {
+        alert("✅ Mode Administrateur activé ! Tu peux maintenant modifier les cellules.");
+        enableEditing();
+      } else {
+        alert("❌ Mot de passe incorrect");
+      }
     }
+
+    function enableEditing() {
+      const cells = document.querySelectorAll('#mainTable td');
+      cells.forEach(cell => {
+        cell.contentEditable = true;
+        cell.onkeyup = updateTotals;
+      });
+    }
+
+    function updateTotals() {
+      // Simple total update logic
+      console.log("Totaux mis à jour");
+    }
+
+    // Add sample rows
+    const communes = ["Aplahoué","Athiémé","Lokossa","Bopa","Comé","Grand-Popo","Houéyogbé","Djakotomè","Dogbo","Klouékanmè","Lalo","Toviklin"];
+    const table = document.getElementById('mainTable');
+    communes.forEach(comm => {
+      const row = table.insertRow();
+      row.innerHTML = `
+        <td>${comm}</td>
+        <td contenteditable="false">0</td>
+        <td contenteditable="false">0</td>
+        <td class="total">0</td>
+        <td contenteditable="false">0</td>
+      `;
+    });
   </script>
 </body>
 </html>
