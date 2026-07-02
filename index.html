@@ -3,80 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNR - Suivi Plants</title>
+  <title>CNR - Suivi Plants Mono-Couffo</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 15px; background: #f4f4f4; }
+    body { font-family: Arial, sans-serif; padding: 10px; background: #f4f4f4; margin: 0; }
     h1 { color: #0066cc; text-align: center; }
+    .tabs { overflow-x: auto; white-space: nowrap; padding: 10px 0; }
+    .tab { display: inline-block; padding: 10px 15px; margin: 5px; background: #ddd; border-radius: 5px; cursor: pointer; }
+    .tab.active { background: #0066cc; color: white; }
     table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #0066cc; color: white; }
-    input { width: 100%; padding: 8px; box-sizing: border-box; }
-    .admin { text-align: center; margin: 15px 0; }
+    input, td[contenteditable] { width: 100%; box-sizing: border-box; }
+    .admin { text-align: center; margin: 10px 0; }
+    .total { font-weight: bold; color: green; background: #e6ffe6; }
   </style>
 </head>
 <body>
-  <h1>🌱 CNR - Suivi Production et Plantation</h1>
+  <h1>🌱 CNR - Suivi Production et Plantation des Plants</h1>
+  <p style="text-align:center;">Mono & Couffo - Données sauvegardées automatiquement</p>
 
   <div class="admin">
-    <input type="password" id="adminPass" placeholder="Mot de passe Admin" style="width:200px;">
+    <input type="password" id="pass" placeholder="Mot de passe Admin" style="width:220px;">
     <button onclick="activateAdmin()">Activer Édition</button>
   </div>
 
-  <h2>Synthèse Globale Mono-Couffo</h2>
-  <table id="dataTable">
-    <tr>
-      <th>Commune</th>
-      <th>Pépinières Écoles</th>
-      <th>Pépinières Privées</th>
-      <th>Production Totale</th>
-      <th>Plants Enlevés</th>
-    </tr>
-  </table>
+  <div class="tabs" id="tabs"></div>
+  <div id="content"></div>
 
   <script>
-    const ADMIN_PASSWORD = "Corneille@12";
-    let isAdmin = false;
-    let data = JSON.parse(localStorage.getItem('cnrPlantData')) || {};
-
     const communes = ["Aplahoué","Athiémé","Lokossa","Bopa","Comé","Grand-Popo","Houéyogbé","Djakotomè","Dogbo","Klouékanmè","Lalo","Toviklin"];
-
-    const table = document.getElementById('dataTable');
-
-    // Create table rows
-    communes.forEach(comm => {
-      const row = table.insertRow();
-      row.innerHTML = `
-        <td>${comm}</td>
-        <td><input type="number" value="${data[comm]?.ecoles || 0}" onchange="saveData()"></td>
-        <td><input type="number" value="${data[comm]?.privees || 0}" onchange="saveData()"></td>
-        <td class="total">${(data[comm]?.ecoles || 0) + (data[comm]?.privees || 0)}</td>
-        <td><input type="number" value="${data[comm]?.enleves || 0}" onchange="saveData()"></td>
-      `;
-    });
+    const ADMIN_PASS = "Corneille@12";
+    let isAdmin = false;
+    let data = JSON.parse(localStorage.getItem('cnrFullData')) || {};
 
     function activateAdmin() {
-      if (document.getElementById('adminPass').value === ADMIN_PASSWORD) {
+      if (document.getElementById('pass').value === ADMIN_PASS) {
         isAdmin = true;
-        alert("✅ Mode Administrateur activé. Les utilisateurs peuvent maintenant modifier.");
+        alert("✅ Mode Administrateur activé - Tu peux maintenant modifier et ajouter des lignes");
+        renderCurrentTab();
       } else {
         alert("❌ Mot de passe incorrect");
       }
     }
 
-    function saveData() {
-      if (!isAdmin) return;
-      data = {};
-      const rows = table.rows;
-      for (let i = 1; i < rows.length; i++) {
-        const comm = rows[i].cells[0].textContent;
-        data[comm] = {
-          ecoles: parseFloat(rows[i].cells[1].querySelector('input').value) || 0,
-          privees: parseFloat(rows[i].cells[2].querySelector('input').value) || 0,
-          enleves: parseFloat(rows[i].cells[4].querySelector('input').value) || 0
-        };
-      }
-      localStorage.setItem('cnrPlantData', JSON.stringify(data));
+    function createTabs() {
+      const tabs = document.getElementById('tabs');
+      communes.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'tab';
+        div.textContent = c;
+        div.onclick = () => showCommune(c);
+        tabs.appendChild(div);
+      });
+      const synth = document.createElement('div');
+      synth.className = 'tab';
+      synth.textContent = "Synthèse";
+      synth.onclick = showSynthesis;
+      tabs.appendChild(synth);
     }
+
+    function showCommune(comm) {
+      document.getElementById('content').innerHTML = `
+        <h2>${comm}</h2>
+        <h3>Point Production Plants</h3>
+        <table id="prodTable"><tr><th>Nom Pépiniériste</th><th>Production Totale</th><th>Tectona</th><th>Gmelina</th><th>Acacia</th></tr></table>
+        <button onclick="addRow('prodTable')">+ Ajouter ligne</button>
+      `;
+    }
+
+    function showSynthesis() {
+      document.getElementById('content').innerHTML = `
+        <h2>Synthèse Globale Mono-Couffo</h2>
+        <table id="synthTable">
+          <tr><th>Commune</th><th>Écoles</th><th>Privées</th><th>Totale</th></tr>
+        </table>
+      `;
+    }
+
+    function addRow(tableId) {
+      if (!isAdmin) return alert("Mode admin requis");
+      const table = document.getElementById(tableId);
+      const row = table.insertRow();
+      row.innerHTML = `<td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td>`;
+    }
+
+    createTabs();
+    showSynthesis();
   </script>
 </body>
 </html>
