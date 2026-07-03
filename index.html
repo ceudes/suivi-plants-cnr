@@ -96,7 +96,6 @@ const supabase = Supabase.createClient(
 'https://eqslkzcwlrhysapmelt.supabase.co',
 'sb_publishable_h_SfWCsqN6QgvLQNVk1Cg_81kxFEYZ'
 );
-
 async function loadCommunes() {
 const { data } = await supabase.from('communes').select('*');
 document.getElementById('content').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
