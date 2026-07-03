@@ -92,15 +92,18 @@ th { background: #0066cc; color: white; }
 <div id="content">Chargement...</div>
 
 <script>
-sb_publishable_h_SfWCsqN6QgGvLQNvkiCg_81kxFEYZ'
-  
+const supabase = Supabase.createClient(
+'https://eqslkzcwlrhysapmelt.supabase.co',
+'sb_publishable_h_SfWCsqN6QgvLQNVk1Cg_81kxFEYZ'
+);
+
 async function loadCommunes() {
 const { data } = await supabase.from('communes').select('*');
 document.getElementById('content').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
 }
 
 loadCommunes();
-</script>
+</script
 </body>
 </html>
 
