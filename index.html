@@ -1,94 +1,176 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CNR - Suivi Plants Mono-Couffo</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 10px; background: #f4f4f4; margin: 0; }
-    h1 { color: #0066cc; text-align: center; }
-    .tabs { overflow-x: auto; white-space: nowrap; padding: 10px 0; }
-    .tab { display: inline-block; padding: 10px 15px; margin: 5px; background: #ddd; border-radius: 5px; cursor: pointer; }
-    .tab.active { background: #0066cc; color: white; }
-    table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #0066cc; color: white; }
-    input, td[contenteditable] { width: 100%; box-sizing: border-box; }
-    .admin { text-align: center; margin: 10px 0; }
-    .total { font-weight: bold; color: green; background: #e6ffe6; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNS-CNR Bénin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+h1 { color: #0066cc; text-align: center; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
+th, td { border: 1px solid #ccc; padding: 8px; }
+th { background: #0066cc; color: white; }
+</style>
 </head>
 <body>
-  <h1>🌱 CNR - Suivi Production et Plantation des Plants</h1>
-  <p style="text-align:center;">Mono & Couffo - Données sauvegardées automatiquement</p>
+<h1>🌱 SNS-CNR Bénin</h1>
+<div id="content">Chargement...</div>
 
-  <div class="admin">
-    <input type="password" id="pass" placeholder="Mot de passe Admin" style="width:220px;">
-    <button onclick="activateAdmin()">Activer Édition</button>
-  </div>
+<script>
+const supabase = Supabase.createClient(
+'https://ton-url.supabase.co',
+'ta-cle-anon-publique'
+);
 
-  <div class="tabs" id="tabs"></div>
-  <div id="content"></div>
+async function loadCommunes() {
+const { data } = await supabase.from('communes').select('*');
+document.getElementById('content').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+}
 
-  <script>
-    const communes = ["Aplahoué","Athiémé","Lokossa","Bopa","Comé","Grand-Popo","Houéyogbé","Djakotomè","Dogbo","Klouékanmè","Lalo","Toviklin"];
-    const ADMIN_PASS = "Corneille@12";
-    let isAdmin = false;
-    let data = JSON.parse(localStorage.getItem('cnrFullData')) || {};
-
-    function activateAdmin() {
-      if (document.getElementById('pass').value === ADMIN_PASS) {
-        isAdmin = true;
-        alert("✅ Mode Administrateur activé - Tu peux maintenant modifier et ajouter des lignes");
-        renderCurrentTab();
-      } else {
-        alert("❌ Mot de passe incorrect");
-      }
-    }
-
-    function createTabs() {
-      const tabs = document.getElementById('tabs');
-      communes.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'tab';
-        div.textContent = c;
-        div.onclick = () => showCommune(c);
-        tabs.appendChild(div);
-      });
-      const synth = document.createElement('div');
-      synth.className = 'tab';
-      synth.textContent = "Synthèse";
-      synth.onclick = showSynthesis;
-      tabs.appendChild(synth);
-    }
-
-    function showCommune(comm) {
-      document.getElementById('content').innerHTML = `
-        <h2>${comm}</h2>
-        <h3>Point Production Plants</h3>
-        <table id="prodTable"><tr><th>Nom Pépiniériste</th><th>Production Totale</th><th>Tectona</th><th>Gmelina</th><th>Acacia</th></tr></table>
-        <button onclick="addRow('prodTable')">+ Ajouter ligne</button>
-      `;
-    }
-
-    function showSynthesis() {
-      document.getElementById('content').innerHTML = `
-        <h2>Synthèse Globale Mono-Couffo</h2>
-        <table id="synthTable">
-          <tr><th>Commune</th><th>Écoles</th><th>Privées</th><th>Totale</th></tr>
-        </table>
-      `;
-    }
-
-    function addRow(tableId) {
-      if (!isAdmin) return alert("Mode admin requis");
-      const table = document.getElementById(tableId);
-      const row = table.insertRow();
-      row.innerHTML = `<td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td>`;
-    }
-
-    createTabs();
-    showSynthesis();
-  </script>
+loadCommunes();
+</script>
 </body>
 </html>
+
+
+Le ven. 3 juil. 2026 à 10:21, Corneille Kakanakou <corneillekakanakou@gmail.com> a écrit :
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNS-CNR Bénin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+h1 { color: #0066cc; }
+.tab { padding: 10px; background: #ddd; display: inline-block; margin: 5px; cursor: pointer; }
+.tab.active { background: #0066cc; color: white; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
+th, td { border: 1px solid #ccc; padding: 8px; }
+th { background: #0066cc; color: white; }
+</style>
+</head>
+<body>
+<h1>🌱 SNS-CNR Bénin - Suivi National des Plants</h1>
+<div id="tabs"></div>
+<div id="content"></div>
+
+<script>
+const supabaseUrl = 'https://ton-url-supabase.supabase.co';
+const supabaseKey = 'ta-cle-publique-supabase';
+const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
+
+// Remplace avec tes vraies valeurs Supabase (URL et clé publique)
+// Tu les trouves dans Supabase → Settings → API
+
+async function loadCommunes() {
+const { data } = await supabase.from('communes').select('*');
+console.log(data);
+}
+
+loadCommunes();
+</script>
+</body>
+</html>
+
+
+Le ven. 3 juil. 2026 à 10:00, Corneille Kakanakou <corneillekakanakou@gmail.com> a écrit :
+-- Table Production (si elle n'existe pas)
+CREATE TABLE IF NOT EXISTS production_plants (
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+commune_id UUID REFERENCES communes(id),
+nom_pepinieriste TEXT,
+production_totale INTEGER,
+tectona INTEGER,
+gmelina INTEGER,
+eucalyptus INTEGER,
+acacia INTEGER,
+khaya INTEGER,
+terminalia INTEGER,
+ceiba INTEGER,
+autres_essences TEXT,
+date_production DATE,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table Enlèvement
+CREATE TABLE IF NOT EXISTS enlevement_plants (
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+commune_id UUID REFERENCES communes(id),
+proprietaire TEXT,
+quantite_produite INTEGER,
+quantite_enlevee INTEGER,
+date_enlevement DATE,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table Mise en Terre
+CREATE TABLE IF NOT EXISTS mise_en_terre (
+
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+commune_id UUID REFERENCES communes(id),
+village TEXT,
+proprietaire TEXT,
+espece TEXT,
+nombre_plants INTEGER,
+superficie_ha NUMERIC,
+date_mise DATE,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+Le jeu. 2 juil. 2026 à 21:21, Corneille Kakanakou <corneillekakanakou@gmail.com> a écrit :
+-- Table Communes
+CREATE TABLE communes (
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+nom TEXT NOT NULL,
+departement TEXT,
+code TEXT,
+latitude NUMERIC,
+longitude NUMERIC,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table Production
+CREATE TABLE production_plants (
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+commune_id UUID REFERENCES communes(id),
+nom_pepinieriste TEXT,
+production_totale INTEGER,
+tectona INTEGER,
+gmelina INTEGER,
+eucalyptus INTEGER,
+acacia INTEGER,
+khaya INTEGER,
+terminalia INTEGER,
+ceiba INTEGER,
+autres_essences TEXT,
+date_production DATE,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table Enlèvement
+CREATE TABLE enlevement_plants (
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+commune_id UUID REFERENCES communes(id),
+proprietaire TEXT,
+quantite_produite INTEGER,
+quantite_enlevee INTEGER,
+date_enlevement DATE,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table Mise en Terre
+CREATE TABLE mise_en_terre (
+id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+commune_id UUID REFERENCES communes(id),
+village TEXT,
+proprietaire TEXT,
+espece TEXT,
+nombre_plants INTEGER,
+superficie_ha NUMERIC,
+date_mise DATE,
+created_at TIMESTAMP DEFAULT NOW()
+);
