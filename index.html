@@ -15,6 +15,80 @@ th { background: #0066cc; color: white; }
 </head>
 <body>
 <h1>🌱 SNS-CNR Bénin</h1>
+<div id="content">Chargement des données...</div>
+
+<script>
+const supabase = Supabase.createClient(
+'https://ton-url.supabase.co',
+'ta-cle-anon-publique'
+);
+
+async function loadData() {
+const { data } = await supabase.from('communes').select('*');
+document.getElementById('content').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+}
+
+loadData();
+</script>
+</body>
+</html>
+
+
+Le ven. 3 juil. 2026 à 10:49, Corneille Kakanakou <corneillekakanakou@gmail.com> a écrit :
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNS-CNR Bénin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+h1 { color: #0066cc; text-align: center; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
+th, td { border: 1px solid #ccc; padding: 8px; }
+th { background: #0066cc; color: white; }
+</style>
+</head>
+<body>
+<h1>🌱 SNS-CNR Bénin</h1>
+<div id="content">Chargement des données...</div>
+
+<script>
+const supabase = Supabase.createClient(
+'https://ton-url.supabase.co',
+'ta-cle-anon-publique'
+);
+
+async function loadData() {
+const { data } = await supabase.from('communes').select('*');
+document.getElementById('content').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+}
+
+loadData();
+</script>
+</body>
+</html>
+
+
+Le ven. 3 juil. 2026 à 10:40, Corneille Kakanakou <corneillekakanakou@gmail.com> a écrit :
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNS-CNR Bénin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+h1 { color: #0066cc; text-align: center; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
+th, td { border: 1px solid #ccc; padding: 8px; }
+th { background: #0066cc; color: white; }
+</style>
+</head>
+<body>
+<h1>🌱 SNS-CNR Bénin</h1>
 <div id="content">Chargement...</div>
 
 <script>
